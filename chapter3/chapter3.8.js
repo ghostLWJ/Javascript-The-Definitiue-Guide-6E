@@ -12,7 +12,9 @@ console.log(typeof (n + " object"));
 // 詳見3.2表
 /*
   基型至基型 (primitive-to-primitive) 的轉換相對直接。
+  特別注意 null, undefined 是例外
 */
+
 
 // 轉換與相等性
 /*
@@ -36,6 +38,8 @@ console.log(typeof Object(3));
   但 null 與 undefined 沒有該方法， 而 Object() 函式在這情況下不會拋出例外，而是傳回新創建的空物件，若用另種方法嘗試轉換為物件
   會產生 TypeError
 */
+Object(null); // {}
+Object(undefined); // {}
 
 /*
   某些運算子會執行隱含的 (implicit) 型別轉換，
@@ -80,4 +84,69 @@ console.log(testNum.toExponential(10));
 console.log(testNum.toPrecision(4));
 console.log(testNum.toPrecision(7));
 console.log(testNum.toPrecision(10));
+
+// 物件 至 基型值的轉換
+/*
+  物件 至 Boolean 及 Wrapper 至 Boolean 來說，全部都是 true
+  所有物件皆繼承兩個轉換方法，toString(), valueOf()
+*/
+
+/* .toString()
+  Array
+  Function
+  Date
+  RegExp
+*/
+[1,2,3].toString(); // 1,2,3
+(function(){}).toString(); // 'function (){}'
+new Date().toString(); // 'Sat Sep 23 2017 17:08:45 GMT+0800 (CST)'
+/\d+/g.toString(); // '/\\d+/g'
+
+/* .valueOf()
+  物件 預設返回 物件本身
+  Wrapper 返回 所包覆的基型值
+  Date 返回 內部值 (1970年1月1日 至 該日期過了多少毫秒)
+  Array, Function, RegExp 直接繼承預設的方法
+*/
+
+var d = new Date(2010, 0, 1);
+d.valueOf(); // 1262275200000
+(function(){}).valueOf(); // [Function]
+[1,2].valueOf(); // [ 1, 2 ]
+/\d+/g.valueOf(); // /\d+/g
+
+// 物件 至 字串
+/*
+  1. .toString() 若傳回基型值，則轉為字串(如果不是字串)並返回
+  2. .valueOf() 若物件沒有 .toString() 或 沒有返回基型值 則調用 valueOf ，若傳回基型值，則轉為字串(如果不是字串)並返回
+  3. throw TypeError 代表 .toString(), .valueOf() 都無法獲得基型值。
+*/
+
+// 物件 至 數字
+/*
+  1. .valueOf() 若傳回基型值，則轉為數字(如果不是數字)並返回
+  2. toString() 若物件沒有 .valueOf() 或 沒有返回基型值 則調用 toString ，若傳回基型值，則轉為數字(如果不是數字)並返回
+  3. throw TypeError 代表 .toString(), .valueOf() 都無法獲得基型值。
+*/
+
+[].valueOf(); // [] 不是基型值，所以調用 toString()
+[].toString(); // '' 並轉為數字 為 0
+
+[1].valueOf(); // [1] 不是基型值，所以調用 toString()
+[1].toString(); // '1' 並轉為數字 為 1
+
+['a'].valueOf(); // [ 'a' ] 不是基型值，所以調用 toString()
+['a'].toString(); // 'a' 並轉為數字 為 NaN
+
+// 運算子 + == != 將物件 至 數字
+/*
+  +, ==, 所使用的 物件 至 基型值 轉換，對 Date 物件有特例，唯有 Date 類別對字串與數字皆有定義了有意義的轉換
+  對 Date 物件是以 物件 至 字串 做轉換
+  其餘皆是以 物件 至 數字 做轉換
+  且在調用 toString 或 valueOf 所得到的基型值，並不會在強制轉為 字串 或 數字
+  其餘運算子(非 +, ==, !=) 皆是以 物件 至 數字 做轉換，也沒有對 Date 物件的特例
+*/
+var d = new Date();
+typeof (d + 1); // 'string'
+typeof (d - 1); // 'number'
 

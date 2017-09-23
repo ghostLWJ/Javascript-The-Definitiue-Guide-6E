@@ -5,7 +5,7 @@
 	另有三個重要的 boolean 運算子。
 	&& -> AND
 	|| -> OR
-	! - NOT
+	! -> NOT
 */
 var b = true;
 console.log('b typeof = ' + typeof b);
